@@ -3,7 +3,9 @@
 Nine pay-per-call endpoints for AI agents, settled with [x402](https://x402.org) in **USDC on Base**. No API keys, no accounts, no signup: the agent gets an HTTP `402` with a price, pays, retries, gets the data.
 
 Live base URL: **`https://alcohol-congratulations-filters-acres.trycloudflare.com`**
-Discovery manifest: [`/.well-known/x402.json`](https://alcohol-congratulations-filters-acres.trycloudflare.com/.well-known/x402.json)
+Discovery manifest: [`/.well-known/x402.json`](https://alcohol-congratulations-filters-acres.trycloudflare.com/.well-known/x402.json) (also served at [`/.well-known/x402`](https://alcohol-congratulations-filters-acres.trycloudflare.com/.well-known/x402))
+
+**Status: LIVE & VERIFIED — 100% EIP-712 & Solana USDC signable.** Every EVM route returns `extra: {name: "USD Coin", version: "2"}` with the Base USDC contract, the Solana route returns the real USDC mint, and both discovery paths answer `200`. Deployment `f32d7c8`, verified 2026-11-19.
 
 `x402` · `ai-agents` · `mcp` · `base` · `solana` · `stellar` · `smart-contract-audit` · `nvidia-nim` · `usdc`
 
@@ -153,14 +155,17 @@ You get the same `402` shape every time. Nothing is charged until a valid `X-PAY
 
 ---
 
-## Two gaps in the live envelope (being fixed, not hidden)
+## Signability (checked, not assumed)
 
-The `402` above is real, but two fields a standard client needs are not in the live response yet:
+Every EVM route ships the EIP-712 domain a client needs to sign `TransferWithAuthorization`:
 
-- **No `extra`.** For `exact` on Base the client signs `TransferWithAuthorization`, which needs the token's EIP-712 domain — `extra: {name: "USD Coin", version: "2"}`. Without it a client cannot construct a payload at all, and you will see a "cannot sign" error rather than a payment prompt.
-- **The Solana route advertises the Base USDC contract.** `/v1/solana/token-risk` returns `network: "solana"` with `asset: 0x8335…2913`, which is USDC on Base. Clients correctly refuse it.
+```json
+"extra": {"name": "USD Coin", "version": "2"}
+```
 
-Both are fixed in the service code and waiting on a redeploy. If you hit either, that is the reason — not your client. `GET /health` and the manifest are unaffected.
+`/v1/solana/token-risk` returns `network: "solana"` with the real mint `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v` — not the Base ERC-20 contract. Solana routes carry no `extra`, which is correct: the domain comes from the mint itself.
+
+`/v1/stellar/account-health` takes `?account=<G...>`, settles in USDC on Base and carries the same `extra`.
 
 ## Version note (read this before filing a bug)
 
@@ -195,7 +200,7 @@ Pay-to addresses:
 
 ## Verified, not claimed
 
-On 2026-11-19 the manifest returned `mode: LIVE` with 9 services, and each route answered `402` with `maxAmountRequired` equal to its listed price (`150000`, `100000`, `80000`, `30000`, `30000`, `10000`). The manifest in this repository ([`x402.json`](x402.json), mirrored at [`.well-known/x402.json`](.well-known/x402.json)) is a byte-for-byte copy of the live one.
+On 2026-11-19 (deployment `f32d7c8`) both `/.well-known/x402` and `/.well-known/x402.json` answered `200` with `mode: LIVE` and 9 services. Every route answered `402` with `maxAmountRequired` matching its listed price (`150000`, `100000`, `80000`, `30000`, `30000`, `10000`, and `500` for the per-second streaming minimum), every EVM route carried `extra: {name: "USD Coin", version: "2"}` with the Base USDC contract, and the Solana route carried the Solana USDC mint. The manifests in this repository ([`x402.json`](x402.json), mirrored at [`.well-known/x402.json`](.well-known/x402.json)) are byte-for-byte copies of the live one.
 
 ## License
 
