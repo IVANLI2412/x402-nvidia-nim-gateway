@@ -33,7 +33,7 @@ Free and unauthenticated: `GET /health` and `GET /.well-known/x402.json`.
 BASE=https://alcohol-congratulations-filters-acres.trycloudflare.com
 
 curl -s $BASE/.well-known/x402.json | jq '.services[] | {path, priceUsdc}'
-curl -s -i $BASE/v1/solana/token-risk?mint=EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v
+curl -s -i $BASE/v1/evm/gas-and-rpc-pulse
 ```
 
 The second call returns `HTTP/1.1 402 Payment Required` with a body like:
@@ -46,9 +46,13 @@ The second call returns `HTTP/1.1 402 Payment Required` with a body like:
     "scheme": "exact",
     "network": "base",
     "maxAmountRequired": "10000",
-    "resource": "/v1/solana/token-risk",
-    "payTo": "0xC5dD2Ea54FF138bb3f71D3466092eA31eF115868"
-  }]
+    "resource": "/v1/evm/gas-and-rpc-pulse",
+    "mimeType": "application/json",
+    "payTo": "0xC5dD2Ea54FF138bb3f71D3466092eA31eF115868",
+    "maxTimeoutSeconds": 60,
+    "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+  }],
+  "paymentError": "falta la cabecera X-PAYMENT (pago USDC por llamada)"
 }
 ```
 
@@ -148,6 +152,15 @@ curl -s -i -X POST $BASE/v1/security/defensive-code-review \
 You get the same `402` shape every time. Nothing is charged until a valid `X-PAYMENT` header arrives.
 
 ---
+
+## Two gaps in the live envelope (being fixed, not hidden)
+
+The `402` above is real, but two fields a standard client needs are not in the live response yet:
+
+- **No `extra`.** For `exact` on Base the client signs `TransferWithAuthorization`, which needs the token's EIP-712 domain — `extra: {name: "USD Coin", version: "2"}`. Without it a client cannot construct a payload at all, and you will see a "cannot sign" error rather than a payment prompt.
+- **The Solana route advertises the Base USDC contract.** `/v1/solana/token-risk` returns `network: "solana"` with `asset: 0x8335…2913`, which is USDC on Base. Clients correctly refuse it.
+
+Both are fixed in the service code and waiting on a redeploy. If you hit either, that is the reason — not your client. `GET /health` and the manifest are unaffected.
 
 ## Version note (read this before filing a bug)
 
