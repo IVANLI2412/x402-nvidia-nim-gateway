@@ -1,0 +1,94 @@
+{
+  "x402Version": 1,
+  "name": "chain-hunter-x402-seller",
+  "description": "Cloud compute y datos on-chain ligeros para agentes AI, pagados por request en USDC (x402)",
+  "baseUrl": "https://alcohol-congratulations-filters-acres.trycloudflare.com",
+  "health": "/health",
+  "discovery": "/.well-known/x402.json",
+  "mode": "LIVE",
+  "priceUsdc": "0.005",
+  "payTo": {
+    "base": "0xC5dD2Ea54FF138bb3f71D3466092eA31eF115868",
+    "solana": "DN3pfYEvdkoTBP4oaEVvemsr98fZPhDSAbfVfmewRGQ5",
+    "stellar": "GAAUNVKEGJVXC4HRRTDT5ASHSTC4ALZ4ORL2PJV5VWOSNXWNS6PJD6OT"
+  },
+  "capabilities": {
+    "signing": false,
+    "withdrawal": false,
+    "onchain_writes": false
+  },
+  "services": [
+    {
+      "path": "/v1/solana/token-risk",
+      "method": "GET",
+      "network": "base",
+      "priceUsdc": "0.01",
+      "payTo": "0xC5dD2Ea54FF138bb3f71D3466092eA31eF115868",
+      "description": "Riesgo rapido de un mint Solana: holders, supply, top-10, freeze/mint authority"
+    },
+    {
+      "path": "/v1/evm/gas-and-rpc-pulse",
+      "method": "GET",
+      "network": "base",
+      "priceUsdc": "0.01",
+      "payTo": "0xC5dD2Ea54FF138bb3f71D3466092eA31eF115868",
+      "description": "Gas base/priority fee y estado de bloque reciente (Base/Arbitrum/Optimism)"
+    },
+    {
+      "path": "/v1/stellar/account-health",
+      "method": "GET",
+      "network": "base",
+      "priceUsdc": "0.01",
+      "payTo": "0xC5dD2Ea54FF138bb3f71D3466092eA31eF115868",
+      "description": "Estado de cuenta, reservas XLM y trustlines en Stellar/Soroban"
+    },
+    {
+      "path": "/v1/quantum/qubo-solver",
+      "method": "POST",
+      "network": "base",
+      "priceUsdc": "0.08",
+      "payTo": "0xC5dD2Ea54FF138bb3f71D3466092eA31eF115868",
+      "description": "Solver QUBO/QAOA por recocido simulado en CPU: optimizacion combinatoria, portafolio y ruteo"
+    },
+    {
+      "path": "/v1/stream/quantum-session",
+      "method": "POST",
+      "network": "base",
+      "priceUsdc": "0.0005",
+      "payTo": "0xC5dD2Ea54FF138bb3f71D3466092eA31eF115868",
+      "description": "Alquiler continuo del solver por segundo (0.0005 USDC/s, deposito minimo 0.05 USDC)"
+    },
+    {
+      "path": "/v1/security/tx-simulate",
+      "method": "POST",
+      "network": "base",
+      "priceUsdc": "0.03",
+      "payTo": "0xC5dD2Ea54FF138bb3f71D3466092eA31eF115868",
+      "description": "Simulador anti-honeypot/anti-rug read-only de llamadas y tokens EVM/Solana (advisory)"
+    },
+    {
+      "path": "/v1/compute/code-sandbox",
+      "method": "POST",
+      "network": "base",
+      "priceUsdc": "0.03",
+      "payTo": "0xC5dD2Ea54FF138bb3f71D3466092eA31eF115868",
+      "description": "Sandbox con timeout para verificar snippets Python/Solidity/Rust (0.03 USDC por ejecucion)"
+    },
+    {
+      "path": "/v1/security/defensive-code-review",
+      "method": "POST",
+      "network": "base",
+      "priceUsdc": "0.15",
+      "payTo": "0xC5dD2Ea54FF138bb3f71D3466092eA31eF115868",
+      "description": "Auditoria defensiva multi-modelo NIM para Solidity/Rust/Move/TS con rem ediacion recomendada (0.15 USDC)"
+    },
+    {
+      "path": "/v1/ai/verified-code-fix",
+      "method": "POST",
+      "network": "base",
+      "priceUsdc": "0.10",
+      "payTo": "0xC5dD2Ea54FF138bb3f71D3466092eA31eF115868",
+      "description": "Parche generado por NIM y validado ejecutandolo en sandbox aislado antes de entregar (0.10 USDC)"
+    }
+  ]
+}
